@@ -1,4 +1,3 @@
-geopy-book
-==========
+# osgeopy-code
 
-Code for the book Open source geoprocessing with Python
+Code for the book *Open source geoprocessing with Python*.

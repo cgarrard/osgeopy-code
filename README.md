@@ -15,3 +15,9 @@ Or directly from GitHub like this:
 ```bash
 pip install https://github.com/cgarrard/osgeopy-code/raw/master/ospybook-latest.zip
 ```
+
+Note that these commands are not run from a Python session. Instead, run them from a terminal window. If pip is not in your path, just provide the full path to it. For example, I could run it from a command prompt on my Windows machine like this:
+
+```bash
+C:\Python33\Scripts\pip install https://github.com/cgarrard/osgeopy-code/raw/master/ospybook-latest.zip
+```

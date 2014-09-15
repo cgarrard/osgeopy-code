@@ -1,4 +1,15 @@
+import os
+
 from osgeo import ogr
+
+def copy_datasource(source_fn, target_fn):
+    """Copy an ogr data source."""
+    ds = ogr.Open(source_fn, 0)
+    if ds is None:
+        raise OSError('Could not open {0} for copying.'.format(source_fn))
+    if os.path.exists(target_fn):
+        ds.GetDriver().DeleteDataSource(target_fn)
+    ds.GetDriver().CopyDataSource(ds, target_fn)
 
 def get_shp_geom(fn):
     """Convenience function to get the first geometry from a shapefile."""
@@ -59,6 +70,17 @@ def print_attributes(lyr_or_fn, n=None, fields=None, geom=True, reset=True):
     if reset:
         lyr.ResetReading()
 
+def print_capabilities(item):
+    """Print capabilities for a driver, datasource, or layer."""
+    if isinstance(item, ogr.Driver):
+        _print_capabilites(item, 'Driver', 'ODrC')
+    elif isinstance(item, ogr.DataSource):
+        _print_capabilites(item, 'DataSource', 'ODsC')
+    elif isinstance(item, ogr.Layer):
+        _print_capabilites(item, 'Layer', 'OLC')
+    else:
+        print('Unsupported item')
+
 def print_drivers():
     """Print a list of available drivers."""
     for i in range(ogr.GetDriverCount()):
@@ -106,6 +128,17 @@ def _get_layer(lyr_or_fn):
         return ds.GetLayer(), ds
     else:
         return lyr_or_fn, None
+
+def _print_capabilites(item, name, prefix):
+    """Print capabilities for a driver, datasource, or layer.
+
+    item   - item to test
+    name   - name of the type of item
+    prefix - prefix of the ogr constants to use for testing
+    """
+    print('*** {0} Capabilities ***'.format(name))
+    for c in filter(lambda x: x.startswith(prefix), dir(ogr)):
+        print('{0}: {1}'.format(c, item.TestCapability(ogr.__dict__[c])))
 
 _geom_constants = {}
 _ignore = ['wkb25DBit', 'wkb25Bit', 'wkbXDR', 'wkbNDR']

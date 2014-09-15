@@ -12,7 +12,7 @@ except NameError:
 class SimpleVectorPlotter(object):
     """Plots vector data represented as lists of coordinates."""
 
-    _graphics = {}
+    # _graphics = {}
 
     def __init__(self, interactive, ticks=False, figsize=None, limits=None):
         """Construct a new SimpleVectorPlotter.
@@ -25,6 +25,7 @@ class SimpleVectorPlotter(object):
         if figsize:
             plt.figure(num=1, figsize=figsize)
         self.interactive = interactive
+        self.ticks = ticks
         if interactive:
             plt.ion()
         else:
@@ -34,6 +35,7 @@ class SimpleVectorPlotter(object):
         if not ticks:
             self.no_ticks()
         plt.axis('equal')
+        self._graphics = {}
 
     def adjust_markers(self):
         figsize = plt.gcf().get_size_inches()
@@ -42,6 +44,12 @@ class SimpleVectorPlotter(object):
         mpl.rcParams['lines.markeredgewidth'] = 0.5 * r
         mpl.rcParams['lines.linewidth'] = r
         mpl.rcParams['patch.linewidth'] = r
+
+    def adjust_markersize(self, size):
+        figsize = plt.gcf().get_size_inches()
+        r = min(figsize[0] / 8, figsize[1] / 6)
+        return 6 * r
+
 
     def axis_on(self, on):
         """Turn the axes and labels on or off."""
@@ -54,6 +62,8 @@ class SimpleVectorPlotter(object):
         """Clear the plot area."""
         plt.cla()
         self._graphics = {}
+        if not self.ticks:
+            self.no_ticks()
 
     def close(self):
         """Close the plot."""

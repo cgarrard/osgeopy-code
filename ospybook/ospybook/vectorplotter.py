@@ -100,12 +100,17 @@ class VectorPlotter(SimpleVectorPlotter):
             return self._plot_polygon(self._get_polygon_coords(geom), **kwargs)
         elif geom_name == 'MULTIPOLYGON':
             return self._plot_multipolygon(self._get_multipolygon_coords(geom), **kwargs)
+        elif geom_name == 'GEOMETRYCOLLECTION':
+            graphics = []
+            for i in range(geom.GetGeometryCount()):
+                graphics += self._plot_geom(geom.GetGeometryRef(i), symbol, **kwargs)
+            return graphics
         else:
             raise RuntimeError('{} not supported'.format(geom_name))
 
     def _get_line_coords(self, geom):
         """Get line coordinates as a list of (x, y) tuples."""
-        return geom.GetPoints()
+        return [coords[:2] for coords in geom.GetPoints()]
 
     def _get_point_coords(self, geom):
         """Get point coordinates as an (x, y) tuple."""

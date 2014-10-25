@@ -22,8 +22,9 @@ class SimpleVectorPlotter(object):
         figsize     - optional figure size
         limits      - optional geographic limits (x_min, x_max, y_min, y_max)
         """
-        if figsize:
-            plt.figure(num=1, figsize=figsize)
+        # if figsize:
+        #     plt.figure(num=1, figsize=figsize)
+        plt.figure(num=1, figsize=figsize)
         self.interactive = interactive
         self.ticks = ticks
         if interactive:
@@ -169,6 +170,14 @@ class SimpleVectorPlotter(object):
         graphics = self._plot_polygon(data, **kwargs)
         self._set_graphics(graphics, name, has_symbol)
 
+    def remove(self, name):
+        """Remove a layer with the given name."""
+        try:
+            self.hide(name)
+            del self._graphics[name]
+        except KeyError:
+            pass
+
     def save(self, fn, dpi=300):
         plt.savefig(fn, dpi=dpi, bbox_inches='tight', pad_inches=0.02)
 
@@ -197,6 +206,14 @@ class SimpleVectorPlotter(object):
     def no_ticks(self):
         plt.gca().get_xaxis().set_ticks([])
         plt.gca().get_yaxis().set_ticks([])
+
+    def zoom(self, factor):
+        """Zoom in or out by a percentage; negative is out."""
+        x_min, x_max, y_min, y_max = plt.axis()
+        x_delta = (x_max - x_min) * factor / 100
+        y_delta = (y_max - y_min) * factor / 100
+        plt.axis((x_min + x_delta, x_max - x_delta,
+                  y_min + y_delta, y_max - y_delta))
 
     def _clockwise(self, data):
         """Determine if points are in clockwise order."""
@@ -231,11 +248,7 @@ class SimpleVectorPlotter(object):
         return data
 
     def _plot_line(self, data, symbol, **kwargs):
-        """Plot a line."""
-        try:
-            x, y = zip(*data)
-        except:
-            x, y, z = zip(*data)
+        x, y = zip(*data)
         return plt.plot(x, y, symbol, **kwargs)
 
     def _plot_multiline(self, data, symbol, **kwargs):

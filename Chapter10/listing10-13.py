@@ -7,10 +7,10 @@ from sklearn import metrics
 import skll
 from osgeo import gdal
 
-folder = r'D:\osgeopy-data-box\Utah'
+folder = r'D:\osgeopy-data\Utah'
 accuracy_fn = 'accuracy_data.csv'
 matrix_fn = 'confusion_matrix.csv'
-prediction_fn = r'D:\osgeopy-data-box\Landsat\Utah\tree_prediction60.tif'
+prediction_fn = r'D:\osgeopy-data\Landsat\Utah\tree_prediction60.tif'
 
 os.chdir(folder)
 

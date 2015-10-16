@@ -7,12 +7,12 @@ from sklearn import tree
 from osgeo import gdal
 import ospybook as pb
 
-folder = r'D:\osgeopy-data-box\Landsat\Utah'
+folder = r'D:\osgeopy-data\Landsat\Utah'
 raster_fns = ['LE70380322000181EDC02_60m.tif',
               'LE70380322000181EDC02_TIR_60m.tif']
 out_fn = 'tree_prediction60.tif'
-train_fn = r'D:\osgeopy-data-box\Utah\training_data.csv'
-gap_fn = r'D:\osgeopy-data-box\Utah\landcover60.tif'
+train_fn = r'D:\osgeopy-data\Utah\training_data.csv'
+gap_fn = r'D:\osgeopy-data\Utah\landcover60.tif'
 
 os.chdir(folder)
 

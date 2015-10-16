@@ -1,6 +1,22 @@
 import os
 
-from osgeo import ogr
+try:
+    import numpy as np
+except:
+    pass
+
+from osgeo import ogr, gdal, gdalconst #, osr
+
+def compute_overview_levels(band):
+    """Return an appropriate list of overview levels."""
+    max_dim = max(band.XSize, band.YSize)
+    overviews = []
+    level = 1
+    while max_dim > 256:
+        level *= 2
+        overviews.append(level)
+        max_dim /= 2
+    return overviews
 
 def copy_datasource(source_fn, target_fn):
     """Copy an ogr data source."""
@@ -31,6 +47,57 @@ def has_spatialite():
     finally:
         if not use_exceptions:
             ogr.DontUseExceptions()
+
+def make_raster(in_ds, fn, data, data_type, nodata=None):
+    """Create a one-band GeoTIFF.
+
+    in_ds     - datasource to copy projection and geotransform from
+    fn        - path to the file to create
+    data      - NumPy array containing data to write
+    data_type - output data type
+    nodata    - optional NoData value
+    """
+    driver = gdal.GetDriverByName('GTiff')
+    out_ds = driver.Create(
+        fn, in_ds.RasterXSize, in_ds.RasterYSize, 1, data_type)
+    out_ds.SetProjection(in_ds.GetProjection())
+    out_ds.SetGeoTransform(in_ds.GetGeoTransform())
+    out_band = out_ds.GetRasterBand(1)
+    if nodata is not None:
+        out_band.SetNoDataValue(nodata)
+    out_band.WriteArray(data)
+    out_band.FlushCache()
+    out_band.ComputeStatistics(False)
+    return out_ds
+
+def make_slices(data, win_size):
+    """Return a list of slices given a window size.
+
+    data     - two-dimensional array to get slices from
+    win_size - tuple of (rows, columns) for the moving window
+    """
+    rows = data.shape[0] - win_size[0] + 1
+    cols = data.shape[1] - win_size[1] + 1
+    slices = []
+    for i in range(win_size[0]):
+        for j in range(win_size[1]):
+            slices.append(data[i:rows+i, j:cols+j])
+    return slices
+
+def make_masked_slices(band, win_size):
+    """Return a list of slices given a window size.
+
+    band     - band to get slices from
+    win_size - tuple of (rows, columns) for the moving window
+    """
+    rows = band.YSize + win_size[0] - 1
+    cols = band.XSize + win_size[1] - 1
+    data = np.ma.masked_all((rows, cols), np.float)
+
+    edge_rows, edge_cols = [int(n / 2) for n in win_size]
+    data[edge_rows:-edge_rows, edge_cols:-edge_cols] = band.ReadAsArray()
+    return data
+
 
 def print_attributes(lyr_or_fn, n=None, fields=None, geom=True, reset=True):
     """Print attribute values in a layer.
@@ -102,6 +169,15 @@ def print_layers(fn):
         print('{0}: {1} ({2})'.format(i, lyr.GetName(),
                                       _geom_constants[lyr.GetGeomType()]))
 
+def stack_bands(filenames):
+    """Returns a 3D array containing all band data from all files."""
+    bands = []
+    for fn in filenames:
+        ds = gdal.Open(fn)
+        for i in range(1, ds.RasterCount + 1):
+            bands.append(ds.GetRasterBand(i).ReadAsArray())
+    return np.dstack(bands)
+
 def _geom_str(geom):
     """Get a geometry string for printing attributes."""
     if geom.GetGeometryType() == ogr.wkbPoint:
@@ -145,3 +221,37 @@ _ignore = ['wkb25DBit', 'wkb25Bit', 'wkbXDR', 'wkbNDR']
 for c in filter(lambda x: x.startswith('wkb'), dir(ogr)):
     if c not in _ignore:
         _geom_constants[ogr.__dict__[c]] = c[3:]
+
+
+def get_constant_name(lib, prefix, value):
+    for c in filter(lambda x: x.startswith(prefix), dir(lib)):
+        if lib.__dict__[c] == value:
+            return c
+    return None
+
+def get_constant_value(lib, name):
+    try:
+        return lib.__dict__[name]
+    except KeyError:
+        return None
+
+
+def get_gdal_constant_name(prefix, value):
+    return get_constant_name(gdal, prefix + '_', value)
+
+def get_gdal_constant_value(name):
+    return get_constant_value(gdal, name)
+
+def get_ogr_constant_name(prefix, value):
+    return get_constant_name(ogr, prefix, value)
+
+def get_ogr_constant_value(name):
+    return get_constant_value(ogr, name)
+
+# def get_osr_constant_name(prefix, value):
+#     if not prefix.startswith('SRS'):
+#         prefix = 'SRS_' + prefix
+#     return get_constant_name(osr, prefix + '_', value)
+
+# def get_osr_constant_value(name):
+#     return get_constant_value(osr, name)

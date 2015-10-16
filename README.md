@@ -2,7 +2,7 @@
 
 Code for the book [*Geoprocessing with Python*](http://manning.com/garrard/?a_aid=geopy&a_bid=c3bae5be).
 
-Corresponding data files can be found at <https://github.com/cgarrard/osgeopy-data>.
+Corresponding data files can be found at <https://app.box.com/s/1cwdnolsmtf0s04o0hshbv4vxiuqcmi9> (it used to be on github, but the raster files were well past github's file size limit).
 
 The source code for the ospybook module referenced in the text is in the ospybook folder. You can install it like this:
 

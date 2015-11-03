@@ -101,7 +101,7 @@ del shp_ds, gdb_ds
 #########################  4.2.5 Web Feature Service  #########################
 
 # Print out layers in a WFS.
-url = 'WFS:http://gis.srh.noaa.gov/arcgis/services/watchwarn/MapServer/WFSServer'
+url = 'WFS:http://gis.srh.noaa.gov/arcgis/services/watchWarn/MapServer/WFSServer'
 pb.print_layers(url)
 
 # Get the first warning from the WFS. This might take a while because it has
@@ -123,7 +123,7 @@ ds = ogr.Open(os.path.join(data_dir, 'US', 'states_48.shp'))
 lyr = ds.GetLayer(0)
 vp.plot(lyr, fill=False)
 ds = ogr.Open(url)
-lyr = ds.GetLayer('watchwarn:WatchesWarnings')
+lyr = ds.GetLayer('watchWarn:WatchesWarnings')
 vp.plot(lyr)
 vp.draw()
 

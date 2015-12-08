@@ -91,13 +91,15 @@ print(sr)
 
 ########################  7.2.3 Assigning a SRS to data  ######################
 
-out_folder = os.path.join(data_dir, 'output')
+# Make sure that the output folder exists in your data directory before
+# trying this example.
+out_fn = os.path.join(data_dir, 'output', 'testdata.shp')
 
 # Create an empty shapefile that uses a UTM SRS. If you run this it will
 # create the shapefile with a .prj file containing the SRS info.
 sr = osr.SpatialReference()
 sr.ImportFromEPSG(26912)
-ds = ogr.GetDriverByName('ESRI Shapefile').Open(out_folder, 1)
+ds = ogr.GetDriverByName('ESRI Shapefile').CreateDataSource(out_fn)
 lyr = ds.CreateLayer('counties', sr, ogr.wkbPolygon)
 
 

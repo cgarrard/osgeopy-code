@@ -16,10 +16,14 @@ data_dir = r'D:\osgeopy-data'
 
 ##########################  3.2 Introduction to OGR  ##########################
 
-# Get some drivers.
+# Import the module.
 from osgeo import ogr
 
-# This works (note that it's not case sensitive).
+# Get the GeoJSON driver.
+driver = ogr.GetDriverByName('GeoJSON')
+print(driver)
+
+# It's not case sensitive, so this also works.
 driver = ogr.GetDriverByName('geojson')
 print(driver)
 
@@ -27,6 +31,7 @@ print(driver)
 driver = ogr.GetDriverByName('shapefile')
 print(driver)
 
+# Print out a list of drivers.
 import ospybook as pb
 pb.print_drivers()
 
@@ -46,7 +51,7 @@ lyr = ds.GetLayer(0)
 # Get the total number of features and the last one.
 num_features = lyr.GetFeatureCount()
 last_feature = lyr.GetFeature(num_features - 1)
-last_feature.NAME
+print(last_feature.NAME)
 
 # Test what happens if you try to loop through a layer twice. The second
 # loop should not print anything. (This is actually why in later examples we
@@ -70,7 +75,7 @@ print('First loop')
 for feat in lyr:
     print(feat.GetField('Name'), feat.GetField('Population'))
 print('Second loop')
-lyr.ResetReading()
+lyr.ResetReading() # This is the important line.
 for feat in lyr:
     pt = feat.geometry()
     print(feat.GetField('Name'), pt.GetX(), pt.GetY())
@@ -82,6 +87,14 @@ for feat in lyr:
 import ospybook as pb
 fn = os.path.join(data_dir, 'global', 'ne_50m_populated_places.shp')
 pb.print_attributes(fn, 3, ['NAME', 'POP_MAX'])
+
+# Turn off geometries but skip field list parameters that come before the
+# "geom" one.
+pb.print_attributes(fn, 3, geom=False)
+
+# If you want to see what happens without the "geom" keyword in the last
+# example, try this:
+pb.print_attributes(fn, 3, False)
 
 # Import VectorPlotter and change directories
 from ospybook.vectorplotter import VectorPlotter
@@ -126,7 +139,7 @@ print(lyr.GetGeomType() == ogr.wkbPolygon)
 feat = lyr.GetFeature(0)
 print(feat.geometry().GetGeometryName())
 
-# Get spatial reference system.
+# Get spatial reference system. The output is also in listing3_2.py.
 print(lyr.GetSpatialRef())
 
 # Get field names and types
@@ -206,6 +219,8 @@ print('Doing some more analysis...')
 # the names would be truncated, but you shouldn't see that if you look at the
 # attributes for the file created here. For the example, we'll create x and y
 # fields for the Washington large_cities dataset.
+
+# Much of this code is not in the book text.
 
 # Open the input shapefile.
 in_fn = os.path.join(data_dir, 'Washington', 'large_cities.shp')
@@ -304,22 +319,23 @@ fld_defn.SetPrecision(4)
 flag = ogr.ALTER_NAME_FLAG + ogr.ALTER_WIDTH_PRECISION_FLAG
 lyr.AlterFieldDefn(i, fld_defn, flag)
 
-# # A slightly different method to change the name of the POINT_X field to
-# # X_coord and the precision to 4 decimal places. Copy the original field
-# # defintion and use it. This uses the built-in Python copy module. If you do
-# # not copy the FieldDefn and instead try to use the original, you will
-# # probably get weird results.
-# import copy
-# lyr_defn = lyr.GetLayerDefn()
-# i = lyr_defn.GetFieldIndex('X')
-# fld_defn = copy.copy(lyr_defn.GetFieldDefn(i))
-# fld_defn.SetName('X_coord')
-# fld_defn.SetPrecision(4)
-# flag = ogr.ALTER_NAME_FLAG + ogr.ALTER_WIDTH_PRECISION_FLAG
-# lyr.AlterFieldDefn(i, fld_defn, flag)
+# A slightly different method to change the name of the POINT_X field to
+# X_coord and the precision to 4 decimal places. Copy the original field
+# definition and use it. This uses the built-in Python copy module. If you
+# do not copy the FieldDefn and instead try to use the original, you will
+# probably get weird results.
+import copy
+lyr_defn = lyr.GetLayerDefn()
+i = lyr_defn.GetFieldIndex('X')
+fld_defn = copy.copy(lyr_defn.GetFieldDefn(i))
+fld_defn.SetName('X_coord')
+fld_defn.SetPrecision(4)
+flag = ogr.ALTER_NAME_FLAG + ogr.ALTER_WIDTH_PRECISION_FLAG
+lyr.AlterFieldDefn(i, fld_defn, flag)
 
-# Take a look at the attributes now. The precision won't be affected yet, but
-# the field names should be changed and there should be a blank ID field.
+# Take a look at the attributes now. The precision won't be affected yet,
+# but the field names should be changed and there should be a blank ID
+# field.
 print('\nNew field names and empty ID field')
 pb.print_attributes(lyr, geom=False)
 
@@ -371,7 +387,7 @@ json_driver = ogr.GetDriverByName('GeoJSON')
 # Create a json file using the default precision. Use a text editor to comapare
 # the file created here with the files created in the next two examples.
 
-# Create the data source
+# Create the data source.
 json_fn = os.path.join(data_dir, 'output', 'africa-default.geojson')
 if os.path.exists(json_fn):
     json_driver.DeleteDataSource(json_fn)
@@ -379,18 +395,19 @@ json_ds = json_driver.CreateDataSource(json_fn)
 if json_ds is None:
     sys.exit('Could not create {0}.'.format(json_fn))
 
-# Create the layer with no options
+# Create the layer with no options.
 json_lyr = json_ds.CreateLayer('africa',
                                shp_lyr.GetSpatialRef(),
                                ogr.wkbMultiPolygon)
 
-# Write some data (you'll learn about this in section 5.1.4).
+# Write some data.
 shp_lyr.ResetReading()
 json_feat = ogr.Feature(json_lyr.GetLayerDefn())
 for shp_feat in shp_lyr:
     if shp_feat.GetField('CONTINENT') == 'Africa':
         json_feat.SetGeometry(shp_feat.geometry())
         json_lyr.CreateFeature(json_feat)
+del json_ds
 
 #########################  Example 2: 6-digit precision
 # Create a json file using the optional COORDINATE_PRECISION creation option
@@ -408,14 +425,14 @@ json_lyr = json_ds.CreateLayer('africa',
                                ogr.wkbMultiPolygon,
                                lyr_options)
 
-# Write some data (you'll learn about this in section 5.1.4).
+# Write some data.
 shp_lyr.ResetReading()
 json_feat = ogr.Feature(json_lyr.GetLayerDefn())
 for shp_feat in shp_lyr:
     if shp_feat.GetField('CONTINENT') == 'Africa':
         json_feat.SetGeometry(shp_feat.geometry())
         json_lyr.CreateFeature(json_feat)
-
+json_ds
 
 ###########################  Example 3: Bounding box
 # Create a json file using the optional COORDINATE_PRECISION and WRITE_BBOX
@@ -433,14 +450,14 @@ json_lyr = json_ds.CreateLayer('africa',
                                ogr.wkbMultiPolygon,
                                lyr_options)
 
-# Write some data (you'll learn about this in section 5.1.4).
+# Write some data.
 shp_lyr.ResetReading()
 json_feat = ogr.Feature(json_lyr.GetLayerDefn())
 for shp_feat in shp_lyr:
     if shp_feat.GetField('CONTINENT') == 'Africa':
         json_feat.SetGeometry(shp_feat.geometry())
         json_lyr.CreateFeature(json_feat)
-
+del json_ds
 
 
 #################  Bonus examples for creating new features  ##################
@@ -499,5 +516,7 @@ for shp_feat in shp_lyr:
         # Copy the geometry.
         json_feat.SetGeometry(shp_feat.geometry())
 
-        # Insert the data into the GeoJSON file
+        # Insert the data into the GeoJSON file.
         json_lyr.CreateFeature(json_feat)
+
+del json_ds, shp_ds

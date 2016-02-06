@@ -1,3 +1,6 @@
+import os
+from osgeo import ogr
+
 def layers_to_feature_dataset(ds_name, gdb_fn, dataset_name):
     """Copy layers to a feature dataset in a file geodatabase."""
 

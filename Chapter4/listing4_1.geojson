@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "NAME": "Geneva", "PLACE": "city" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [ 6.1465886, 46.2017589 ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "NAME": "Lausanne", "PLACE": "city" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [ 6.6327025, 46.5218269 ]
+      }
+    },
+  ]
+}

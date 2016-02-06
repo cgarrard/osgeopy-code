@@ -97,6 +97,12 @@ shp_ds = ogr.Open(out_folder, 1)
 shp_ds.CopyLayer(gdb_lyr, 'countries_110m')
 del shp_ds, gdb_ds
 
+# Use listing 4.2 to copy shapefiles in a folder into a file geodatabase.
+import listing4_2
+shp_folder = os.path.join(data_dir, 'global')
+gdb_fn = os.path.join(shp_folder, 'osgeopy-data.gdb')
+listing4_2.layers_to_feature_dataset(shp_folder, gdb_fn, 'global')
+
 
 #########################  4.2.5 Web Feature Service  #########################
 
@@ -146,9 +152,9 @@ original_fn = os.path.join(data_dir, 'Washington', 'large_cities2.shp')
 new_fn = os.path.join(data_dir, 'output', 'large_cities3.shp')
 pb.copy_datasource(original_fn, new_fn)
 
-# Try opening the datasource read-only and see if you can add a field (the
-# example in the book opens it for writing, as in the next snippet in this
-# file).
+# Try opening the datasource read-only and see if you can add a field (you
+# can't). The example in the book opens it for writing, as in the next
+# snippet in this file).
 ds = ogr.Open(new_fn, 0)
 if ds is None:
     sys.exit('Could not open {0}.'.format(new_fn))
@@ -158,7 +164,7 @@ if not lyr.TestCapability(ogr.OLCCreateField):
     raise RuntimeError('Cannot create fields.')
 lyr.CreateField(ogr.FieldDefn('ID', ogr.OFTInteger))
 
-# Now try it with the datasource opened for writing (this is the way the
+# Now try it with the datasource opened for writing. This is the way the
 # book does it, because this is how it should be done.
 ds = ogr.Open(new_fn, 1)
 if ds is None:

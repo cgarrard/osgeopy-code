@@ -61,10 +61,14 @@ def make_map(state_name, json_fn, html_fn, **kwargs):
     fmap.create_map(path=html_fn)
 
 
-# Top-level code. Don't forget to change the directory.
-os.chdir(r'D:\Dropbox\Public\webmaps')
-make_map('Oklahoma', 'ok.json', 'ok.html',
-         zoom_start=7)
+# Top-level code. Don't forget to change the directory. The if-statement
+# makes it so that the next two lines of code only run if this script is
+# being run as a stand-alone script. This way you can import this file
+# into listing 4.4 and this part won't run, but you'll have access to all
+# of the above functions.
+if __name__ == "__main__":
+    os.chdir(r'D:\Dropbox\Public\webmaps')
+    make_map('Oklahoma', 'ok.json', 'ok.html', zoom_start=7)
 
 
 # You can look at the capabilities output for this WFS here:

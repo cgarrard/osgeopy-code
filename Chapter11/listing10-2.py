@@ -6,8 +6,8 @@ from osgeo import gdal
 import ospybook as pb
 
 os.chdir(r'D:\osgeopy-data\Massachusetts')
-in_fn = 'm_4207162_ne_19_1_20140718_20140923.tif'
-out_fn = 'ndvi2.tif'
+in_fn = 'm_4207162_ne_19_1_20140718_20140923_clip.tif'
+out_fn = 'ndvi.tif'
 
 ds = gdal.Open(in_fn)
 red = ds.GetRasterBand(1).ReadAsArray().astype(np.float)

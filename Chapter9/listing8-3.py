@@ -14,7 +14,14 @@ in_ds = gdal.Open('nat_color.tif')
 # Create an inverse geotransform for the raster. This converts real-world
 # coordinates to pixel offsets.
 in_gt = in_ds.GetGeoTransform()
-success, inv_gt = gdal.InvGeoTransform(in_gt)
+inv_gt = gdal.InvGeoTransform(in_gt)
+if gdal.VersionInfo()[0] == '1':
+    if inv_gt[0] == 1:
+        inv_gt = inv_gt[1]
+    else:
+        raise RuntimeError('Inverse geotransform failed')
+elif inv_gt is None:
+    raise RuntimeError('Inverse geotransform failed')
 
 # Get the offsets that correspond to the bounding box corner coordinates.
 offsets_ul = gdal.ApplyGeoTransform(

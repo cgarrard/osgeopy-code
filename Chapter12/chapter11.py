@@ -87,7 +87,7 @@ plt.show()
 
 
 # # Use the function from listing 11.5 to get overview data and plot it.
-def get_overview_data(fn, band=1, level=-1):
+def get_overview_data(fn, band_index=1, level=-1):
     """Returns an array containing data from an overview.
 
     fn    - path to raster file
@@ -96,7 +96,7 @@ def get_overview_data(fn, band=1, level=-1):
             the coarsest can be retrieved with -1
     """
     ds = gdal.Open(fn)
-    band = ds.GetRasterBand(1)
+    band = ds.GetRasterBand(band_index)
     if level > 0:
         ov_band = band.GetOverview(level)
     else:

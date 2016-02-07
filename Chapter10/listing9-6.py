@@ -9,7 +9,18 @@ os.chdir(r'D:\osgeopy-data\Landsat\Washington')
 # Open the original raster and get its geotransform info.
 tmp_ds = gdal.Open('nat_color.tif')
 tmp_gt = tmp_ds.GetGeoTransform()
-inv_gt = gdal.InvGeoTransform(tmp_gt)[1]
+
+# Make sure the inverse geotransform worked. Remember that InvGeoTransform
+# returns a success flag and the new geotransform in GDAL 1.x but just the
+# new geotransform or None in GDAL 2.x.
+inv_gt = gdal.InvGeoTransform(tmp_gt)
+if gdal.VersionInfo()[0] == '1':
+    if inv_gt[0] == 1:
+        inv_gt = inv_gt[1]
+    else:
+        raise RuntimeError('Inverse geotransform failed')
+elif inv_gt is None:
+    raise RuntimeError('Inverse geotransform failed')
 
 # Figure out what the new geotransform is.
 vashon_ul = (532000, 5262600)
@@ -23,7 +34,7 @@ gt[0] += gt[1] * ulx
 gt[3] += gt[5] * uly
 
 # Create the output VRT, which is really just an XML file.
-ds = gdal.GetDriverByName('vrt').Create('vashon.vrt', columns, rows, 3)
+ds = gdal.GetDriverByName('vrt').Create('vashonxxx3.vrt', columns, rows, 3)
 ds.SetProjection(tmp_ds.GetProjection())
 ds.SetGeoTransform(gt)
 

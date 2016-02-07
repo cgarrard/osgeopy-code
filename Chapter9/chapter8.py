@@ -197,3 +197,10 @@ print('Dataset dimensions: {} {}'.format(ndvi_ds.RasterXSize, ndvi_ds.RasterYSiz
 # For example, you still need to get the band before you can read data.
 ndvi_band = ndvi_ds.GetRasterBand(1)
 print('Band dimensions: {} {}'.format(ndvi_band.XSize, ndvi_band.YSize))
+
+
+
+###################################  8.6 WMS  #################################
+
+ds = gdal.Open('listing8-6.xml')
+gdal.GetDriverByName('PNG').CreateCopy(r'D:\Temp\liberty.png', ds)

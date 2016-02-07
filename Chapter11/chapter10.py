@@ -78,7 +78,7 @@ np.empty((2,2))
 # follow the method shown in listing 10.2.
 
 os.chdir(os.path.join(data_dir, 'Massachusetts'))
-in_fn = 'm_4207162_ne_19_1_20140718_20140923.tif'
+in_fn = 'm_4207162_ne_19_1_20140718_20140923_clip.tif'
 out_fn = 'ndvi2.tif'
 
 ds = gdal.Open(in_fn)

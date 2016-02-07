@@ -15,11 +15,11 @@ def plot_polygon(poly, symbol='k-', **kwargs):
 # Use this function to fill polygons (shown shortly after
 # this listing in the text). Uncomment this one and comment
 # out the one above.
-def plot_polygon(poly, symbol='w', **kwargs):
-    """Plots a polygon using the given symbol."""
-    for i in range(poly.GetGeometryCount()):
-        x, y = zip(*poly.GetGeometryRef(i).GetPoints())
-        plt.fill(x, y, symbol, **kwargs)
+# def plot_polygon(poly, symbol='w', **kwargs):
+#     """Plots a polygon using the given symbol."""
+#     for i in range(poly.GetGeometryCount()):
+#         x, y = zip(*poly.GetGeometryRef(i).GetPoints())
+#         plt.fill(x, y, symbol, **kwargs)
 
 
 # This function is new.

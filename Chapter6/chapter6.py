@@ -275,7 +275,7 @@ vp.plot(yard, fill=False, ec='black', ls='dotted', linewidth=3)
 #########################  6.4.2  Multiple polygons  ##########################
 
 # Make the garden boxes multipolygon. Create a regular polygon for each raised
-# bed, and then add it to the multipolygon.
+# bed, and then add it to the multipolygon. This is the code in listing 6.3.
 box1 = ogr.Geometry(ogr.wkbLinearRing)
 box1.AddPoint(87.5, 25.5)
 box1.AddPoint(89, 25.5)
@@ -319,7 +319,8 @@ vp.zoom(-1)
 # Make the outer boundary ring first (it's the same as earlier). Then make the
 # ring for the house (hole). Then create a polygon and add the rings, making
 # sure to add the outer boundary first. Close all of the rings at once by
-# calling CloseRings *after* adding all of the rings.
+# calling CloseRings *after* adding all of the rings. This is the code from
+# listing 6.4.
 lot = ogr.Geometry(ogr.wkbLinearRing)
 lot.AddPoint(58, 38.5)
 lot.AddPoint(53, 6)

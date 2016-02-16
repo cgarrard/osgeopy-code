@@ -9,6 +9,7 @@
 # course, you can type the full path to the file for each example if you'd
 # prefer.
 import os
+import sys
 data_dir = r'D:\osgeopy-data'
 # data_dir =
 

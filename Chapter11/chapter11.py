@@ -15,64 +15,65 @@ data_dir = r'D:\osgeopy-data'
 
 
 
-##############################  10.1 Intro to NumPy  ##########################
+##############################  11.1 Intro to NumPy  ##########################
 
 # Test out an array.
 import numpy as np
 a = np.arange(12)
-a
-a[1]
-a[1:5]
+print(a)
+print(a[1])
+print(a[1:5])
 
 # Change an array's shape.
 a = np.reshape(a, (3,4))
-a
-a[1,2]
+print(a)
+print(a[1,2])
 
 # Access entire rows or columns.
-a[1]
-a[:,2]
+print(a[1])
+print(a[:,2])
 
 # Access 2-dimensional slice.
-a[1:,1:3]
-a[2,:-1]
+print(a[1:,1:3])
+print(a[2,:-1])
 
 # Math
 a = np.array([[1, 3, 4], [2, 7, 6]])
 b = np.array([[5, 2, 9], [3, 6, 4]])
-a
-b
-a + b
-a > b
+print(a)
+print(b)
+print(a + b)
+print(a > b)
 
 # Where
-np.where(a > b, 10, 5)
-np.where(a > b, a, b)
+print(np.where(a > b, 10, 5))
+print(np.where(a > b, a, b))
 
 # Access non-contiguous data.
 a = np.random.randint(0, 20, 12)
-a
-a[[8, 0, 3]]
+print(a)
+print(a[[8, 0, 3]])
 
 a = np.reshape(a, (3, 4))
-a
-a[[2, 0, 0], [0, 0, 3]]
+print(a)
+print(a[[2, 0, 0], [0, 0, 3]])
 
 # Use Booleans.
-b
-a[b]
-np.mean(a[a>5])
+b = np.reshape(np.random.randint(0, 20, 12), (3, 4)) > 10
+print(b)
+print(a[b])
+print(np.mean(a[a>5]))
 
 # Create arrays.
-np.zeros((3,2))
-np.ones((2,3), np.int)
-np.ones((2,3), np.int) * 5
-np.empty((2,2))
+print(np.zeros((3,2)))
+print(np.ones((2,3), np.int))
+print(np.ones((2,3), np.int) * 5)
+print(np.empty((2,2)))
 
 
-##############################  10.2 Map Algebra  #############################
+##############################  11.2 Map Algebra  #############################
 
-###########################  10.2.1 Local Analyses  ###########################
+###########################  11.2.1 Local Analyses  ###########################
 
 # These examples are here because they're in the text, but really you should
 # follow the method shown in listing 10.2.
@@ -99,7 +100,7 @@ pb.make_raster(ds, 'ndvi3.tif', ndvi, gdal.GDT_Float32, -99)
 del ds
 
 
-###########################  10.2.2 Focal Analyses  ###########################
+###########################  11.2.2 Focal Analyses  ###########################
 
 indata  = np.array([
     [3, 5, 6, 4, 4, 3],
@@ -149,7 +150,7 @@ outdata[1:-1, 1:-1] = np.mean(stacked, 2)
 print(outdata)
 
 
-###########################  10.2.3 Zonal Analyses  ###########################
+###########################  11.2.3 Zonal Analyses  ###########################
 
 # Function to get histogram bins.
 def get_bins(data):
@@ -170,7 +171,7 @@ print(hist)
 
 
 # Example to create a one-dimensional bin instead of the 2-d one in
-# listing 10.8.
+# listing 11.9.
 
 data_dir = r'D:\osgeopy-data'
 
@@ -195,3 +196,48 @@ def my_mode(data):
 modes, bins, bn = scipy.stats.binned_statistic(
     eco_data, lc_data, my_mode, eco_bins)
 print(modes)
+
+
+###########################  11.3 Resampling Data  ###########################
+
+# Make some test data.
+data = np.reshape(np.arange(24), (4, 6))
+print(data)
+
+# Keep every other cell.
+print(data[::2, ::2])
+
+# Keep every other cell, but start at the second row and column.
+print(data[1::2, 1::2])
+
+# Repeat each column.
+print(np.repeat(data, 2, 1))
+
+# Repeat columns and rows.
+print(np.repeat(np.repeat(data, 2, 0), 2, 1))
+
+# Import the listing so we can use get_indices.
+import listing11_12
+
+# Here's a small sample grid so you can see what's happening.
+fn = os.path.join(data_dir, 'misc', 'smallgrid.tif')
+
+ds = gdal.Open(fn)
+data = ds.ReadAsArray()
+x, y = listing11_12.get_indices(ds, 25, -25)
+new_data = data[y.astype(int), x.astype(int)]
+
+print(data)
+print(new_data)
+
+
+####################  Resampling with GDAL command line utilities  ###########################
+
+import subprocess
+
+args = [
+    'gdalwarp',
+    '-tr', '0.02', '0.02',
+    '-r', 'bilinear',
+    'everest.tif', 'everest_resample.tif']
+result = subprocess.call(args)

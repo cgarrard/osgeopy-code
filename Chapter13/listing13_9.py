@@ -1,6 +1,6 @@
 # Script demonstrating how to use multiple rules in a mapnik style.
 
-#####################  The first part is from listing 11.8.
+#####################  The first part is from listing 13.8.
 
 import mapnik
 

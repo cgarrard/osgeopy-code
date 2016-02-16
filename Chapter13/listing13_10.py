@@ -1,6 +1,6 @@
 # Script to add the roads and city outline to the mapnik map.
 
-#####################  The first part is from listing 11.9.
+#####################  The first part is from listing 13.9.
 
 import mapnik
 

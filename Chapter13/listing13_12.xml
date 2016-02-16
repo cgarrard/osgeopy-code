@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Map srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    <Style name="atlas">
+        <Rule>
+            <Filter>
+                (([Feature]=&apos;Canal&apos;) or ([Feature]=&apos;Lake&apos;))
+            </Filter>
+            <PolygonSymbolizer fill="rgb(165,191,221)"/>
+        </Rule>
+        <Rule>
+            <Filter>([Feature]=&apos;Swamp or Marsh&apos;)</Filter>
+            <PolygonSymbolizer fill="rgb(102,170,102)"/>
+            <LineSymbolizer stroke="rgb(102,170,102)" stroke-width="2"/>
+        </Rule>
+    </Style>
+    <Layer name="National Atlas Hydro"
+           srs="+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs">
+        <StyleName>atlas</StyleName>
+        <Datasource>
+            <Parameter name="file">D:\osgeopy-data\US\wtrbdyp010</Parameter>
+            <Parameter name="type">shape</Parameter>
+        </Datasource>
+    </Layer>
+</Map>

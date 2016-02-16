@@ -1,0 +1,16 @@
+See listing10_5.vrt in the osgeopy-data/Landsat/Washington folder for a working version (because it's in the correct folder). But here's the text that's in it:
+
+<VRTDataset rasterXSize="8849" rasterYSize="8023">
+    <SRS>
+        PROJCS["WGS 84 / UTM zone 10N",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433],AUTHORITY["EPSG","4326"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",-123],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AUTHORITY["EPSG","32610"]]
+    </SRS>
+    <GeoTransform>343724.25, 28.5, 0, 5369585.25, 0,-28.5</GeoTransform>
+    <VRTRasterBand dataType="Byte" band="1">
+        <SimpleSource>
+            <SourceFilename relativeToVRT="1">nat_color.tif</SourceFilename>
+            <SourceBand>3</SourceBand>
+            <SourceProperties RasterXSize="8849" RasterYSize="8023"
+                DataType="Byte" BlockXSize="8849" BlockYSize="1" />
+        </SimpleSource>
+    </VRTRasterBand>
+</VRTDataset>

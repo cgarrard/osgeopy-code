@@ -14,15 +14,15 @@ data_dir = r'D:\osgeopy-data'
 
 
 
-##############################  9.1 Ground control points  ####################
+##############################  10.1 Ground control points  ####################
 
-# See listing9.1.py, since the example reuses some code from that listing.
+# See listing10_1.py, since the example reuses some code from that listing.
 
 
-#############  9.2 Converting pixel coordinates to another image  #############
+#############  10.2 Converting pixel coordinates to another image  #############
 
 # Create a function to get the extent of a raster and try it out on the
-# raster just created in listing 9.1.
+# raster just created in listing 10.1. This function is in
 def get_extent(fn):
     '''Returns min_x, max_y, max_x, min_y'''
     ds = gdal.Open(fn)
@@ -61,9 +61,10 @@ print(success, xyz)
 
 
 
-##############################  9.3 Color tables  #############################
+##############################  10.3 Color tables  #############################
 
-# Make a copy of the raster we just created in listing 9.3.
+# Make a copy of the raster we just created in listing 10.3.
+os.chdir(os.path.join(data_dir, 'Switzerland'))
 original_ds = gdal.Open('dem_class2.tif')
 ds = original_ds.GetDriver().CreateCopy('dem_class3.tif', original_ds)
 
@@ -80,9 +81,9 @@ del band, ds
 
 
 
-#############################  9.3.1 Transparency  ############################
+#############################  10.3.1 Transparency  ############################
 
-# Let's take the output from listing 9.3 and add some transparency. We have
+# Let's take the output from listing 10.3 and add some transparency. We have
 # to make a copy of the dataset, though, so we can add the alpha band.
 os.chdir(os.path.join(data_dir, 'Switzerland'))
 original_ds = gdal.Open('dem_class2.tif')
@@ -133,7 +134,7 @@ del ds, original_ds
 
 
 
-###############################  9.4 Histograms  ##############################
+###############################  10.4 Histograms  ##############################
 
 # Look at approximate vs exact histogram values.
 os.chdir(os.path.join(data_dir, 'Switzerland'))
@@ -162,7 +163,7 @@ print(hist)
 
 
 
-##################################  9.6 VRTs  #################################
+##################################  10.6 VRTs  #################################
 
 # XML defining a VRT band. It uses the first band in whatever dataset it's
 # pointed to with the SourceFilename tag.
@@ -197,7 +198,7 @@ ds.GetRasterBand(3).SetMetadata(metadata, 'vrt_sources')
 del ds, tmp_ds
 
 
-##########################  9.6.2 Troublesome formats  ########################
+##########################  10.6.2 Troublesome formats  ########################
 
 # Use the VRT created in listing 9.5 to create a jpeg of Vashon Island.
 os.chdir(os.path.join(data_dir, 'Landsat', 'Washington'))
@@ -206,7 +207,7 @@ gdal.GetDriverByName('jpeg').CreateCopy('vashon.jpg', ds)
 
 
 
-##########################  9.6.3 Reprojecting images  ########################
+##########################  10.6.3 Reprojecting images  ########################
 
 # Reproject the nat_color.tif from UTM to unprojected lat/lon. First create
 # the output SRS.
@@ -226,7 +227,7 @@ gdal.GetDriverByName('gtiff').CreateCopy('nat_color_wgs84.tif', vrt_ds)
 
 
 
-###########################  9.7 Callback functions  ##########################
+###########################  10.7 Callback functions  ##########################
 
 # Let's calculate statistics on the natural color Landsat image and show
 # progress while it does it (this image probably already has stats, so this
@@ -253,7 +254,7 @@ gdal.TermProgress_nocb(100)
 
 
 
-######################  9.8 Exceptions and error handlers  ####################
+######################  10.8 Exceptions and error handlers  ####################
 
 os.chdir(os.path.join(data_dir, 'Switzerland'))
 

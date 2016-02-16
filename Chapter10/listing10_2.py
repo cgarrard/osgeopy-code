@@ -5,14 +5,8 @@ import math
 import os
 from osgeo import gdal, osr
 
-# Create a function to get the extent of a raster and try it out on the
-# raster just created.
-def get_extent(fn):
-    '''Returns min_x, max_y, max_x, min_y'''
-    ds = gdal.Open(fn)
-    gt = ds.GetGeoTransform()
-    return (gt[0], gt[3], gt[0] + gt[1] * ds.RasterXSize,
-        gt[3] + gt[5] * ds.RasterYSize)
+# The get_extent function from the text is in ch10funcs.py.
+import ch10funcs
 
 # Don't forget to change the directory.
 os.chdir(r'D:\osgeopy-data\Massachusetts')
@@ -22,9 +16,9 @@ in_files = glob.glob('O*.tif')
 
 # Loop through all of the files and get the bounding coordinates for the
 # whole batch. This will be the output extent.
-min_x, max_y, max_x, min_y = get_extent(in_files[0])
+min_x, max_y, max_x, min_y = ch10funcs.get_extent(in_files[0])
 for fn in in_files[1:]:
-    minx, maxy, maxx, miny = get_extent(fn)
+    minx, maxy, maxx, miny = ch10funcs.get_extent(fn)
     min_x = min(min_x, minx)
     max_y = max(max_y, maxy)
     max_x = max(max_x, maxx)

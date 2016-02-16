@@ -39,7 +39,7 @@ columns = off_lrx - off_ulx
 
 # Create an output raster with the correct number of rows and columns.
 gtiff_driver = gdal.GetDriverByName('GTiff')
-out_ds = gtiff_driver.Create('vashon2.tif', columns, rows, 3)
+out_ds = gtiff_driver.Create('vashon.tif', columns, rows, 3)
 out_ds.SetProjection(in_ds.GetProjection())
 
 # Convert the offsets to real-world coordinates for the georeferencing info.
@@ -65,3 +65,4 @@ for i in range(1, 4):
     # filling the entire image.
     out_band.WriteArray(data)
 
+del out_ds

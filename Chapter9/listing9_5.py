@@ -43,3 +43,5 @@ out_ds.FlushCache()
 for i in range(num_bands):
     out_ds.GetRasterBand(i + 1).ComputeStatistics(False)
 out_ds.BuildOverviews('average', [2, 4, 8, 16])
+
+del out_ds

@@ -13,7 +13,7 @@ data_dir = r'D:\osgeopy-data'
 
 
 
-########################  8.3 Reading partial datasets  #######################
+########################  9.3 Reading partial datasets  #######################
 
 # Open a Landsat band.
 os.chdir(os.path.join(data_dir, 'Landsat', 'Washington'))
@@ -62,7 +62,7 @@ print(data)
 band.WriteArray(data, 8, 2)
 
 
-#####################  8.3.1 Using real-world coordinates  ####################
+#####################  9.3.1 Using real-world coordinates  ####################
 
 # Get the geotransform from one of the Landsat bands.
 os.chdir(os.path.join(data_dir, 'Landsat', 'Washington'))
@@ -74,8 +74,14 @@ print(gt)
 # Now get the inverse geotransform. The original can be used to convert
 # offsets to real-world coordinates, and the inverse can be used to convert
 # real-world coordinates to offsets.
+
+# GDAL 1.x: You get a success flag and the geotransform.
 success, inv_gt = gdal.InvGeoTransform(gt)
 print(success, inv_gt)
+
+# GDAL 2.x: You get the geotransform or None
+inv_gt = gdal.InvGeoTransform(gt)
+print(inv_gt)
 
 # Use the inverset geotransform to get some pixel offsets from real-world
 # UTM coordinates (since that's what the Landsat image uses). The offsets
@@ -100,7 +106,7 @@ value = data[yoff, xoff]
 print(value)
 
 
-############################  8.3.2 Resampling data  ##########################
+############################  9.3.2 Resampling data  ##########################
 
 # Get the first band from the raster created with listing 8.1.
 os.chdir(os.path.join(data_dir, 'Landsat', 'Washington'))
@@ -128,7 +134,7 @@ print(resampled_data2)
 
 
 
-#############################  8.4 Byte sequences  ############################
+#############################  9.4 Byte sequences  ############################
 
 # Read a few pixels as a byte string from the raster created with listing 8.1.
 os.chdir(os.path.join(data_dir, 'Landsat', 'Washington'))
@@ -177,7 +183,7 @@ del test_ds
 
 
 
-###############################  8.5 Subdatasets  #############################
+###############################  9.5 Subdatasets  #############################
 
 # Get the subdatasets from a MODIS file.
 os.chdir(os.path.join(data_dir, 'Modis'))
@@ -200,7 +206,7 @@ print('Band dimensions: {} {}'.format(ndvi_band.XSize, ndvi_band.YSize))
 
 
 
-###################################  8.6 WMS  #################################
+###################################  9.6 WMS  #################################
 
-ds = gdal.Open('listing8-6.xml')
+ds = gdal.Open('listing9_6.xml')
 gdal.GetDriverByName('PNG').CreateCopy(r'D:\Temp\liberty.png', ds)

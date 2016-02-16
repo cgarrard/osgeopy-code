@@ -42,3 +42,5 @@ out_band.WriteArray(data)
 out_band.FlushCache()
 out_band.ComputeStatistics(False)
 out_ds.BuildOverviews('average', [2, 4, 8, 16, 32, 64])
+
+del out_ds

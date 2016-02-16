@@ -11,17 +11,6 @@ raster_fns = ['LE70380322000181EDC02_60m.tif',
               'LE70380322000181EDC02_TIR_60m.tif']
 out_fn = 'kmeans_prediction_60m.tif'
 
-# Function from list 10.10.
-def stack_bands(filenames):
-    """Returns a 3D array containing all band data from all files."""
-    bands = []
-    for fn in filenames:
-        ds = gdal.Open(fn)
-        for i in range(1, ds.RasterCount + 1):
-            bands.append(ds.GetRasterBand(i).ReadAsArray())
-    return np.dstack(bands)
-
-
 # Stack the bands and run the analysis.
 os.chdir(folder)
 data = pb.stack_bands(raster_fns)

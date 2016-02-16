@@ -14,18 +14,17 @@ data_dir = r'D:\osgeopy-data'
 
 
 
-###################  7.2 Using spatial references with OSR  ###################
+###################  8.2 Using spatial references with OSR  ###################
 
 # import osr so you can work with spatial references.
 from osgeo import osr
 
 
-######################  7.2.1 Spatial reference objects  ######################
+######################  8.2.1 Spatial reference objects  ######################
 
 # Look at a geographic SRS.
 ds = ogr.Open(os.path.join(data_dir, 'US', 'states_48.shp'))
-lyr = ds.GetLayer()
-srs = lyr.GetSpatialRef()
+srs = ds.GetLayer().GetSpatialRef()
 
 # Well Known Text (WKT)
 print(srs)
@@ -57,7 +56,7 @@ print(utm_sr.GetAuthorityCode('DATUM'))
 print(utm_sr.GetProjParm(osr.SRS_PP_FALSE_EASTING))
 
 
-##################  7.2.2 Creating spatial reference objects  #################
+##################  8.2.2 Creating spatial reference objects  #################
 
 # Create a UTM SRS from an EPSG code.
 sr = osr.SpatialReference()
@@ -89,7 +88,7 @@ sr.Validate()
 print(sr)
 
 
-########################  7.2.3 Assigning a SRS to data  ######################
+########################  8.2.3 Assigning a SRS to data  ######################
 
 # Make sure that the output folder exists in your data directory before
 # trying this example.
@@ -103,7 +102,7 @@ ds = ogr.GetDriverByName('ESRI Shapefile').CreateDataSource(out_fn)
 lyr = ds.CreateLayer('counties', sr, ogr.wkbPolygon)
 
 
-#########################  7.2.4 Projecting geometries  #######################
+#########################  8.2.4 Projecting geometries  #######################
 
 # Get the world landmasses and plot them.
 world = pb.get_shp_geom(os.path.join(data_dir, 'global', 'ne_110m_land_1p.shp'))
@@ -148,9 +147,9 @@ print(sr)
 
 
 
-#################################  7.3 pyproj  ################################
+#################################  8.3 pyproj  ################################
 
-#######################  7.3.1 Transforming between SRS  ######################
+#######################  8.3.1 Transforming between SRS  ######################
 
 # Transform lat/lon to UTM.
 import pyproj
@@ -169,7 +168,7 @@ x, y = pyproj.transform(wgs84, nad27, 580744.32, 4504695.26)
 print(x, y)
 
 
-#######################  7.3.2 Great-circle calculations  #####################
+#######################  8.3.2 Great-circle calculations  #####################
 
 # Set lat/lon coordinates for Los Angeles and Berlin.
 la_lat, la_lon = 34.0500, -118.2500

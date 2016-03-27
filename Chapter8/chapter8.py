@@ -119,8 +119,9 @@ web_mercator_sr = osr.SpatialReference()
 web_mercator_sr.ImportFromEPSG(3857)
 world.TransformTo(web_mercator_sr)
 
-# Set an environment variable and try the projection again.
-os.environ['OGR_ENABLE_PARTIAL_REPROJECTION'] = 'TRUE'
+# Set a config variable and try the projection again.
+from osgeo import gdal
+gdal.SetConfigOption('OGR_ENABLE_PARTIAL_REPROJECTION', 'TRUE')
 web_mercator_sr = osr.SpatialReference()
 web_mercator_sr.ImportFromEPSG(3857)
 world.TransformTo(web_mercator_sr)

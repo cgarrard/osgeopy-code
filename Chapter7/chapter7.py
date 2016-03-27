@@ -13,135 +13,135 @@ data_dir = r'D:\osgeopy-data'
 
 
 
-# ##########################  7.1  Overlay tools  ###############################
+##########################  7.1  Overlay tools  ###############################
 
-# # Look at New Orleans wetlands. First get a specific marsh feature near New
-# # Orleans.
-# vp = VectorPlotter(True)
-# water_ds = ogr.Open(os.path.join(data_dir, 'US', 'wtrbdyp010.shp'))
-# water_lyr = water_ds.GetLayer(0)
-# water_lyr.SetAttributeFilter('WaterbdyID = 1011327')
-# marsh_feat = water_lyr.GetNextFeature()
-# marsh_geom = marsh_feat.geometry().Clone()
-# vp.plot(marsh_geom, 'b')
+# Look at New Orleans wetlands. First get a specific marsh feature near New
+# Orleans.
+vp = VectorPlotter(True)
+water_ds = ogr.Open(os.path.join(data_dir, 'US', 'wtrbdyp010.shp'))
+water_lyr = water_ds.GetLayer(0)
+water_lyr.SetAttributeFilter('WaterbdyID = 1011327')
+marsh_feat = water_lyr.GetNextFeature()
+marsh_geom = marsh_feat.geometry().Clone()
+vp.plot(marsh_geom, 'b')
 
-# # Get the New Orleans boundary.
-# nola_ds = ogr.Open(os.path.join(data_dir, 'Louisiana', 'NOLA.shp'))
-# nola_lyr = nola_ds.GetLayer(0)
-# nola_feat = nola_lyr.GetNextFeature()
-# nola_geom = nola_feat.geometry().Clone()
-# vp.plot(nola_geom, fill=False, ec='red', ls='dashed', lw=3)
+# Get the New Orleans boundary.
+nola_ds = ogr.Open(os.path.join(data_dir, 'Louisiana', 'NOLA.shp'))
+nola_lyr = nola_ds.GetLayer(0)
+nola_feat = nola_lyr.GetNextFeature()
+nola_geom = nola_feat.geometry().Clone()
+vp.plot(nola_geom, fill=False, ec='red', ls='dashed', lw=3)
 
-# # Intersect the marsh and boundary polygons to get the part of the marsh that
-# # falls within New Orleans city boundaries.
-# intersection = marsh_geom.Intersection(nola_geom)
-# vp.plot(intersection, 'yellow', hatch='x')
+# Intersect the marsh and boundary polygons to get the part of the marsh that
+# falls within New Orleans city boundaries.
+intersection = marsh_geom.Intersection(nola_geom)
+vp.plot(intersection, 'yellow', hatch='x')
 
-# # Figure out how much of New Orleans is wetlands. Throw out lakes and anything
-# # not in the vicinity of New Orleans, and then loop through the remaining water
-# # body features. For each one, find the area of the feature that is contained
-# # within city boundaries and add it to a running total. Then it's easy to
-# # figure the percentage by dividing that total by the area of New Orleans.
-# water_lyr.SetAttributeFilter("Feature != 'Lake'")
-# water_lyr.SetSpatialFilter(nola_geom)
-# wetlands_area = 0
-# for feat in water_lyr:
-#     intersect = feat.geometry().Intersection(nola_geom)
-#     wetlands_area += intersect.GetArea()
-# pcnt = wetlands_area / nola_geom.GetArea()
-# print('{:.1%} of New Orleans is wetland'.format(pcnt))
+# Figure out how much of New Orleans is wetlands. Throw out lakes and anything
+# not in the vicinity of New Orleans, and then loop through the remaining water
+# body features. For each one, find the area of the feature that is contained
+# within city boundaries and add it to a running total. Then it's easy to
+# figure the percentage by dividing that total by the area of New Orleans.
+water_lyr.SetAttributeFilter("Feature != 'Lake'")
+water_lyr.SetSpatialFilter(nola_geom)
+wetlands_area = 0
+for feat in water_lyr:
+    intersect = feat.geometry().Intersection(nola_geom)
+    wetlands_area += intersect.GetArea()
+pcnt = wetlands_area / nola_geom.GetArea()
+print('{:.1%} of New Orleans is wetland'.format(pcnt))
 
-# # Another way to figure out how much of New Orleans is wetlands, this time
-# # using layers instead of individual geometries. You need to set the attribute
-# # filter, but a spatial filter isn't necessary. In this case you'll need an
-# # empty layer to store the intersection results in, so create a temporary one
-# # in memory. Then run the intersection and use SQL to sum up the areas.
-# water_lyr.SetSpatialFilter(None)
-# water_lyr.SetAttributeFilter("Feature != 'Lake'")
+# Another way to figure out how much of New Orleans is wetlands, this time
+# using layers instead of individual geometries. You need to set the attribute
+# filter, but a spatial filter isn't necessary. In this case you'll need an
+# empty layer to store the intersection results in, so create a temporary one
+# in memory. Then run the intersection and use SQL to sum up the areas.
+water_lyr.SetSpatialFilter(None)
+water_lyr.SetAttributeFilter("Feature != 'Lake'")
 
-# memory_driver = ogr.GetDriverByName('Memory')
-# temp_ds = memory_driver.CreateDataSource('temp')
-# temp_lyr = temp_ds.CreateLayer('temp')
+memory_driver = ogr.GetDriverByName('Memory')
+temp_ds = memory_driver.CreateDataSource('temp')
+temp_lyr = temp_ds.CreateLayer('temp')
 
-# nola_lyr.Intersection(water_lyr, temp_lyr)
+nola_lyr.Intersection(water_lyr, temp_lyr)
 
-# sql = 'SELECT SUM(OGR_GEOM_AREA) AS area FROM temp'
-# lyr = temp_ds.ExecuteSQL(sql)
-# pcnt = lyr.GetFeature(0).GetField('area') / nola_geom.GetArea()
-# print('{:.1%} of New Orleans is wetland'.format(pcnt))
-
-
-# #########################  7.2  Proximity tools  ##############################
-
-# # Open layers for examples.
-# shp_ds = ogr.Open(os.path.join(data_dir, 'US'))
-# volcano_lyr = shp_ds.GetLayer('us_volcanos_albers')
-# cities_lyr = shp_ds.GetLayer('cities_albers')
-
-# # Find out how far Seattle is from Mount Rainier.
-# volcano_lyr.SetAttributeFilter("NAME = 'Rainier'")
-# feat = volcano_lyr.GetNextFeature()
-# rainier = feat.geometry().Clone()
-
-# cities_lyr.SetSpatialFilter(None)
-# cities_lyr.SetAttributeFilter("NAME = 'Seattle'")
-# feat = cities_lyr.GetNextFeature()
-# seattle = feat.geometry().Clone()
-
-# meters = round(rainier.Distance(seattle))
-# miles = meters / 1600
-# print('{} meters ({} miles)'.format(meters, miles))
+sql = 'SELECT SUM(OGR_GEOM_AREA) AS area FROM temp'
+lyr = temp_ds.ExecuteSQL(sql)
+pcnt = lyr.GetFeature(0).GetField('area') / nola_geom.GetArea()
+print('{:.1%} of New Orleans is wetland'.format(pcnt))
 
 
+#########################  7.2  Proximity tools  ##############################
 
-# #############################  2.5D Geometries  ################################
+# Open layers for examples.
+shp_ds = ogr.Open(os.path.join(data_dir, 'US'))
+volcano_lyr = shp_ds.GetLayer('us_volcanos_albers')
+cities_lyr = shp_ds.GetLayer('cities_albers')
 
-# # Take a look at the distance between two 2D points. The distance should be 4.
-# pt1_2d = ogr.Geometry(ogr.wkbPoint)
-# pt1_2d.AddPoint(15, 15)
-# pt2_2d = ogr.Geometry(ogr.wkbPoint)
-# pt2_2d.AddPoint(15, 19)
-# print(pt1_2d.Distance(pt2_2d))
+# Find out how far Seattle is from Mount Rainier.
+volcano_lyr.SetAttributeFilter("NAME = 'Rainier'")
+feat = volcano_lyr.GetNextFeature()
+rainier = feat.geometry().Clone()
 
-# # Now create some 2.5D points, using the same x and y coordinates, but adding
-# # z coordinates. The distance now, if three dimensions were taken into account,
-# # would be 5. But ogr still returns 4. This is because the z coordinates are
-# # ignored.
-# pt1_25d = ogr.Geometry(ogr.wkbPoint25D)
-# pt1_25d.AddPoint(15, 15, 0)
-# pt2_25d = ogr.Geometry(ogr.wkbPoint25D)
-# pt2_25d.AddPoint(15, 19, 3)
-# print(pt1_25d.Distance(pt2_25d))
+cities_lyr.SetSpatialFilter(None)
+cities_lyr.SetAttributeFilter("NAME = 'Seattle'")
+feat = cities_lyr.GetNextFeature()
+seattle = feat.geometry().Clone()
 
-# # Take a look at the area of a 2D polygon. The area should be 100.
-# ring = ogr.Geometry(ogr.wkbLinearRing)
-# ring.AddPoint(10, 10)
-# ring.AddPoint(10, 20)
-# ring.AddPoint(20, 20)
-# ring.AddPoint(20, 10)
-# poly_2d = ogr.Geometry(ogr.wkbPolygon)
-# poly_2d.AddGeometry(ring)
-# poly_2d.CloseRings()
-# print(poly_2d.GetArea())
+meters = round(rainier.Distance(seattle))
+miles = meters / 1600
+print('{} meters ({} miles)'.format(meters, miles))
 
-# # Now create a 2.5D polygon, again using the same x and y coordinates, but
-# # providing a z coordinate for a couple of the vertices. The area of this in
-# # three dimensions is around 141, but ogr still returns 100.
-# ring = ogr.Geometry(ogr.wkbLinearRing)
-# ring.AddPoint(10, 10, 0)
-# ring.AddPoint(10, 20, 0)
-# ring.AddPoint(20, 20, 10)
-# ring.AddPoint(20, 10, 10)
-# poly_25d = ogr.Geometry(ogr.wkbPolygon25D)
-# poly_25d.AddGeometry(ring)
-# poly_25d.CloseRings()
-# print(poly_25d.GetArea())
 
-# # If three dimensions were taken into account, pt1_d2 would be contained in the
-# # 2D polygon, but not the 3D one. But since the 3D one is really 2.5D, ogr
-# # thinks the point is contained in both polygons.
-# print(poly_2d.Contains(pt1_2d))
-# print(poly_25d.Contains(pt1_2d))
+
+#############################  2.5D Geometries  ################################
+
+# Take a look at the distance between two 2D points. The distance should be 4.
+pt1_2d = ogr.Geometry(ogr.wkbPoint)
+pt1_2d.AddPoint(15, 15)
+pt2_2d = ogr.Geometry(ogr.wkbPoint)
+pt2_2d.AddPoint(15, 19)
+print(pt1_2d.Distance(pt2_2d))
+
+# Now create some 2.5D points, using the same x and y coordinates, but adding
+# z coordinates. The distance now, if three dimensions were taken into account,
+# would be 5. But ogr still returns 4. This is because the z coordinates are
+# ignored.
+pt1_25d = ogr.Geometry(ogr.wkbPoint25D)
+pt1_25d.AddPoint(15, 15, 0)
+pt2_25d = ogr.Geometry(ogr.wkbPoint25D)
+pt2_25d.AddPoint(15, 19, 3)
+print(pt1_25d.Distance(pt2_25d))
+
+# Take a look at the area of a 2D polygon. The area should be 100.
+ring = ogr.Geometry(ogr.wkbLinearRing)
+ring.AddPoint(10, 10)
+ring.AddPoint(10, 20)
+ring.AddPoint(20, 20)
+ring.AddPoint(20, 10)
+poly_2d = ogr.Geometry(ogr.wkbPolygon)
+poly_2d.AddGeometry(ring)
+poly_2d.CloseRings()
+print(poly_2d.GetArea())
+
+# Now create a 2.5D polygon, again using the same x and y coordinates, but
+# providing a z coordinate for a couple of the vertices. The area of this in
+# three dimensions is around 141, but ogr still returns 100.
+ring = ogr.Geometry(ogr.wkbLinearRing)
+ring.AddPoint(10, 10, 0)
+ring.AddPoint(10, 20, 0)
+ring.AddPoint(20, 20, 10)
+ring.AddPoint(20, 10, 10)
+poly_25d = ogr.Geometry(ogr.wkbPolygon25D)
+poly_25d.AddGeometry(ring)
+poly_25d.CloseRings()
+print(poly_25d.GetArea())
+
+# If three dimensions were taken into account, pt1_d2 would be contained in the
+# 2D polygon, but not the 3D one. But since the 3D one is really 2.5D, ogr
+# thinks the point is contained in both polygons.
+print(poly_2d.Contains(pt1_2d))
+print(poly_25d.Contains(pt1_2d))
 
 
 ############################  7.3  Wind farms  ################################

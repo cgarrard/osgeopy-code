@@ -34,7 +34,7 @@ gt[0] += gt[1] * ulx
 gt[3] += gt[5] * uly
 
 # Create the output VRT, which is really just an XML file.
-ds = gdal.GetDriverByName('vrt').Create('vashonxxx3.vrt', columns, rows, 3)
+ds = gdal.GetDriverByName('vrt').Create('vashon3.vrt', columns, rows, 3)
 ds.SetProjection(tmp_ds.GetProjection())
 ds.SetGeoTransform(gt)
 

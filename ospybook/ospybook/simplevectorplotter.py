@@ -37,6 +37,7 @@ class SimpleVectorPlotter(object):
             self.no_ticks()
         plt.axis('equal')
         self._graphics = {}
+        self._init_colors()
 
     def adjust_markers(self):
         figsize = plt.gcf().get_size_inches()
@@ -232,13 +233,28 @@ class SimpleVectorPlotter(object):
         codes[0] = Path.MOVETO
         return codes
 
+    def _init_colors(self):
+        if mpl.__version__ >= '1.5':
+            self.colors = list(mpl.rcParams['axes.prop_cycle'])
+            self.current_color = -1
+            self._next_color = self._next_color_new
+        else:
+            self._next_color = self._next_color_old
+
     def _line_symbol(self):
         """Get a default line symbol."""
         return self._next_color() + '-'
 
-    def _next_color(self):
+    def _next_color_old(self):
         """Get the next color in the rotation."""
         return next(plt.gca()._get_lines.color_cycle)
+
+    def _next_color_new(self):
+        """Get the next color in the rotation."""
+        self.current_color += 1
+        if self.current_color >= len(self.colors):
+            self.current_color = 0
+        return self.colors[self.current_color]['color']
 
     def _order_vertices(self, data, clockwise=True):
         """Order vertices in clockwise or counter-clockwise order."""

@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='ospybook',
-    version='0.13',
+    version='1.0',
     author='Chris Garrard',
     author_email='garrard.chris@gmail.com',
     packages=['ospybook'],

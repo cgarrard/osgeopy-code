@@ -2,3 +2,4 @@ v0.1, 8-3-2014 -- Initial release.
 v0.11, 9-14-2014 -- Added copy_datasource and print_capabilities functions.
 v0.12, 10-24-2014 -- Bug fixes.
 v0.13, 10-15-2015 -- Raster tools.
+v1.0 3-27-16 -- Updated vector plotter for new version of Matplotlib.
